@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Planner</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #a16901;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 2px 0 10px rgb(255, 0, 0);
+            border-radius: 25px;
+        }
+
+        #login, #dashboard {
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px solid orangered;
+            border-radius: 4px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #ff6f00;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background-color: #e7690f;
+        }
+
+        #subjects {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        #subjects button, #subjects a button {
+            width: 30%;
+            margin: 10px 0;
+        }
+
+        #tasks {
+            margin-top: 20px;
+        }
+
+        .task {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f9f9f9;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 25px;
+            border: 2px solid orangered;
+        }
+
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            padding: 10px;
+            background: #d36702;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="login">
+        <h2>Login</h2>
+        <input type="text" id="username" placeholder="Username">
+        <input type="password" id="password" placeholder="Password">
+        <button onclick="login()">Login</button>
+    </div>
+    <div class="container" id="dashboard" style="display: none;">
+        <div id="subjects">
+            <button onclick="showTasks('physics')">Physics</button>
+            <button onclick="showTasks('physical_chemistry')">Physical Chemistry</button>
+            <button onclick="showTasks('inorganic_chemistry')">Inorganic Chemistry</button>
+            <button onclick="showTasks('organic_chemistry')">Organic Chemistry</button>
+            <button onclick="showTasks('math')">Math</button>
+            <button onclick="showTasks('botany')">Botany</button>
+            <button onclick="showTasks('zoology')">Zoology</button>
+            <button onclick="showTasks('today')">Today's Work</button>
+            <button><a href="https://www.pw.live/study/batches/study" target="_blank">PW</a></button>
+        </div>
+        <div id="tasks"></div>
+    </div>
+    <footer>
+        Mobile: 7061380994,9546346529 | WhatsApp: 9546346529 | Email: a7061380994@gmail.com
+    </footer>
+    <script>
+        const users = {
+            altamash: 'neet',
+            amman: 'neet',
+            mumtaz: 'neet',
+            wasim: 'jee'
+        };
+
+        const tasks = {
+            altamash: [],
+            amman: [],
+            mumtaz: [],
+            wasim: []
+        };
+
+        function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (users[username] && users[username] === password) {
+                localStorage.setItem('username', username);
+                document.getElementById('login').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+            } else {
+                alert('Login failed');
+            }
+        }
+
+        function showTasks(subject) {
+            const username = localStorage.getItem('username');
+            const tasksContainer = document.getElementById('tasks');
+            tasksContainer.innerHTML = '';
+
+            let userTasks = tasks[username];
+            if (subject !== 'today') {
+                userTasks = userTasks.filter(task => task.subject === subject);
+            }
+
+            userTasks.forEach((task, index) => {
+                const taskElement = document.createElement('div');
+                taskElement.className = 'task';
+                taskElement.innerHTML = `
+                    <p>${task.subject}: ${task.description}</p>
+                    <button onclick="editTask(${index}, '${subject}')">Edit</button>
+                `;
+                tasksContainer.appendChild(taskElement);
+            });
+
+            if (subject !== 'today') {
+                const addTaskElement = document.createElement('div');
+                addTaskElement.innerHTML = `
+                    <button onclick="addTask('${subject}')">Add Task</button>
+                `;
+                tasksContainer.appendChild(addTaskElement);
+            }
+        }
+
+        function addTask(subject) {
+            const description = prompt('Enter task description');
+            if (description) {
+                const username = localStorage.getItem('username');
+                tasks[username].push({ subject, description });
+                showTasks(subject);
+            }
+        }
+
+        function editTask(index, subject) {
+            const description = prompt('Enter new description');
+            if (description) {
+                const username = localStorage.getItem('username');
+                tasks[username][index].description = description;
+                showTasks(subject);
+            }
+        }
+    </script>
+</body>
+</html>
