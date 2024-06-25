@@ -84,18 +84,6 @@
             background: #d36702;
             color: white;
         }
-
-        @media (max-width: 600px) {
-            .container {
-                margin: 20px;
-                padding: 10px;
-            }
-
-            #subjects button, #subjects a button {
-                width: 45%;
-                margin: 5px 0;
-            }
-        }
     </style>
 </head>
 <body>
@@ -158,12 +146,6 @@
             let userTasks = tasks[username];
             if (subject !== 'today') {
                 userTasks = userTasks.filter(task => task.subject === subject);
-            } else {
-                userTasks = userTasks.filter(task => {
-                    const taskDate = new Date(task.date);
-                    const now = new Date();
-                    return taskDate.getDate() === now.getDate() && taskDate.getMonth() === now.getMonth() && taskDate.getFullYear() === now.getFullYear();
-                });
             }
 
             userTasks.forEach((task, index) => {
@@ -172,7 +154,6 @@
                 taskElement.innerHTML = `
                     <p>${task.subject}: ${task.description}</p>
                     <button onclick="editTask(${index}, '${subject}')">Edit</button>
-                    ${subject === 'today' ? `<button onclick="markAsComplete(${index})">Complete</button>` : ''}
                 `;
                 tasksContainer.appendChild(taskElement);
             });
@@ -190,7 +171,7 @@
             const description = prompt('Enter task description');
             if (description) {
                 const username = localStorage.getItem('username');
-                tasks[username].push({ subject, description, date: new Date() });
+                tasks[username].push({ subject, description });
                 showTasks(subject);
             }
         }
@@ -203,28 +184,6 @@
                 showTasks(subject);
             }
         }
-
-        function markAsComplete(index) {
-            const username = localStorage.getItem('username');
-            tasks[username][index].completed = true;
-            tasks[username][index].completionDate = new Date();
-            showTasks('today');
-        }
-
-        function clearCompletedTasks() {
-            const username = localStorage.getItem('username');
-            const now = new Date();
-            tasks[username] = tasks[username].filter(task => {
-                if (task.completed) {
-                    const completionDate = new Date(task.completionDate);
-                    const timeDifference = now - completionDate;
-                    return timeDifference < 24 * 60 * 60 * 1000; // 24 hours in milliseconds
-                }
-                return true;
-            });
-        }
-
-        setInterval(clearCompletedTasks, 60 * 60 * 1000); // Run every hour
     </script>
 </body>
 </html>
